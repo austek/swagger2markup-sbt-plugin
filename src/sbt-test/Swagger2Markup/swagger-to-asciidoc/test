@@ -1,0 +1,5 @@
+> swagger2markup:processSwagger
+
+$ exists target/docs/definitions.adoc
+$ exists target/docs/overview.adoc
+$ exists target/docs/paths.adoc

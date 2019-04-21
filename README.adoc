@@ -1,0 +1,34 @@
+= Swagger2Markup SBT Plugin
+// Settings:
+:idprefix:
+:idseparator: -
+:icons: font
+ifdef::env-github,env-browser[]
+:toc: preamble
+:toclevels: 1
+endif::[]
+ifdef::env-github[]
+:status:
+:outfilesuffix: .adoc
+:!toc-title:
+endif::[]
+// Aliases:
+:project-name: swagger2markup-sbt-plugin
+:project-org: austek
+:project-handle: sbt-swagger2markup
+// URIs:
+:uri-repo: https://github.com/{project-org}/{project-name}
+:uri-build-status: http://travis-ci.org/{project-org}/{project-name}
+:img-build-status: https://img.shields.io/travis/{project-org}/{project-name}/master.svg
+
+ifdef::status[]
+image:{img-build-status}[Build Status Badge,link={uri-build-status}]
+endif::[]
+
+== Reference documentation
+
+The documentation can be found at https://github.com/Swagger2Markup/swagger2markup#reference-documentation[Reference documentation]
+
+== License
+
+See the link:LICENSE[LICENSE] file for details.
