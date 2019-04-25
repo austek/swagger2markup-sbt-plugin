@@ -12,11 +12,8 @@ lazy val root = (project in file("."))
     description := "Swagger2Markup SBT Plugin",
     scalaVersion := "2.12.8",
     libraryDependencies ++= Seq(
-      "io.github.swagger2markup" % "swagger2markup" % "1.3.0"
+      "io.github.swagger2markup" % "swagger2markup" % "1.3.3"
     ),
-    crossSbtVersions := Vector("1.2.8"),
-    releaseCrossBuild := true,
-    publishArtifact in Test := false,
     resolvers += Resolver.mavenLocal,
     resolvers += Resolver.sonatypeRepo("releases"),
     resolvers += Resolver.jcenterRepo,
