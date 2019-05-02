@@ -39,10 +39,10 @@ object Swagger2MarkupPlugin extends AutoPlugin {
     } else if (!sourceDirectory.value.exists) {
       logger.info(s"sourceDirectory ${sourceDirectory.value.getPath} does not exist. Skip processing")
     } else {
-      logger.debug("convertSwagger2markup goal started")
-      logger.debug("swaggerInput: " + swaggerInput.value)
-      logger.debug("outputDir: " + outputDirectory.value)
-      logger.debug("outputFile: " + outputFile.value)
+      logger.debug("processSwagger task started")
+      logger.debug(s"swaggerInput: ${swaggerInput.value}")
+      logger.debug(s"outputDir: ${outputDirectory.value}")
+      logger.debug(s"outputFile: ${outputFile.value}")
       val swagger2markupProperties = properties.value.map { case (k, v) => s"swagger2markup.$k" -> v }
       swagger2markupProperties.foreach { config =>
         logger.debug(s"${config._1} : ${config._2}")
@@ -55,15 +55,12 @@ object Swagger2MarkupPlugin extends AutoPlugin {
           )
 
         val swagger2MarkupConfig = new Swagger2MarkupConfigBuilder(swagger2markupProperties.asJava).build
-        logger.info(s"####### SSSSSSSSSSS: " + swagger2MarkupConfig.isSeparatedDefinitionsEnabled)
-        logger.info(s"####### OOOOOOOOOOO: " + swagger2MarkupConfig.isSeparatedOperationsEnabled)
-        logger.info(s"####### MMMMMMMMMMM: " + swagger2MarkupConfig.getMarkupLanguage)
         if (!swaggerInput.value.toLowerCase.startsWith("http")) {
           val inputFile = new File(swaggerInput.value)
           if (inputFile.exists) {
             if (inputFile.isDirectory) {
               logger.debug(s"Processing local directory: ${swaggerInput.value}")
-              getSwaggerFiles(inputFile, logger = logger).foreach { swaggerFile =>
+              getSwaggerFiles(inputFile).foreach { swaggerFile =>
                 swaggerToMarkup(
                   swaggerInput.value,
                   outputFile.value,
@@ -101,7 +98,7 @@ object Swagger2MarkupPlugin extends AutoPlugin {
         }
       } catch {
         case e: Exception =>
-          throw new Exception("Failed to execute goal 'processSwagger': \n\t" + e.getMessage, e)
+          throw new Exception(s"Failed to execute goal 'processSwagger': \n\t${e.getMessage}", e)
       }
       logger.debug("processSwagger goal finished")
     }
@@ -127,18 +124,16 @@ object Swagger2MarkupPlugin extends AutoPlugin {
           val effectiveOutputDir = getEffectiveOutputDirWhenInputIsAFolder(inputFile, outputDirectory, converter, logger)
           logger.debug(s"Effective Output Directory: $outputDirectory")
           converter.getContext.setOutputPath(effectiveOutputDir.toPath)
-          logger.info(s"####### useFile: ${outFile.toPath} -- ${outFile.toPath.getFileName.toString}")
           Paths.get(effectiveOutputDir.getPath, outFile.toPath.getFileName.toString)
         } else {
-          logger.info(s"####### useFile: ${outFile.toPath}")
           outFile.toPath
         }
-        logger.info("Converting input to one file: " + useFile)
+        logger.info(s"Converting input to one file: $useFile")
         converter.toFile(useFile)
       case None =>
         var effectiveOutputDir = outputDirectory
         if (inputIsLocalFolder) effectiveOutputDir = getEffectiveOutputDirWhenInputIsAFolder(inputFile, outputDirectory, converter, logger)
-        logger.info("Converting input to multiple files in folder: '" + effectiveOutputDir + "'")
+        logger.info(s"Converting input to multiple files in folder: '$effectiveOutputDir'")
         converter.toFolder(effectiveOutputDir.toPath)
     }
   }
@@ -171,17 +166,16 @@ object Swagger2MarkupPlugin extends AutoPlugin {
   }
 
   private def hasMultipleSwaggerFiles(converter: Swagger2MarkupConverter, logger: PluginLogger): Boolean = {
-    getSwaggerFiles(new File(converter.getContext.getSwaggerLocation).getParentFile, recursive = false, logger).nonEmpty
+    getSwaggerFiles(new File(converter.getContext.getSwaggerLocation).getParentFile, recursive = false).nonEmpty
   }
 
   private def extractSwaggerFileNameWithoutExtension(converter: Swagger2MarkupConverter): String =
     FilenameUtils.removeExtension(new File(converter.getContext.getSwaggerLocation).getName)
 
-  def getSwaggerFiles(location: File, recursive: Boolean = true, logger: PluginLogger): Seq[File] = {
+  def getSwaggerFiles(location: File, recursive: Boolean = true): Seq[File] = {
     @tailrec
     def go(toCheck: List[File], results: List[File]): Seq[File] = toCheck match {
       case head :: tail =>
-        logger.info(s"########## ALLFiles: $head")
         val allFiles: List[File] = if(head.isFile) List(head) else head.listFiles.toList
         val swaggerFiles = allFiles.filter(_.isFile).filter(f => f.getName.endsWith("yaml") || f.getName.endsWith("yml") || f.getName.endsWith("json"))
         val childDirs = allFiles.filter(_.isDirectory)
@@ -193,7 +187,6 @@ object Swagger2MarkupPlugin extends AutoPlugin {
         }
       case _ => results
     }
-    logger.info(s"########## location: $location")
     go(location :: Nil, Nil)
   }
 

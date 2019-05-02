@@ -3,7 +3,5 @@ lazy val root = (project in file("."))
   .settings(
     Swagger2Markup / outputDirectory := target.value / "generated-docs" / "swagger",
     Swagger2Markup / skip := true,
-    name := "skip-execution",
-    scalaVersion := "2.12.8",
-    version := "0.1"
+    name := "skip-execution"
   )

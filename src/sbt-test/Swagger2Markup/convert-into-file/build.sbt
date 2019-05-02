@@ -3,6 +3,5 @@ lazy val root = (project in file("."))
   .settings(
     Swagger2Markup / swaggerInput := "src/docs/swagger/swagger.json",
     Swagger2Markup / outputFile := Some(target.value / "generated-docs" / "swagger"),
-    name := "convert-into-file",
-    logLevel := Level.Debug
+    name := "convert-into-file"
   )
