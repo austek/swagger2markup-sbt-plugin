@@ -1,30 +1,13 @@
 package com.mdsol.sbt
 
-import sbt.Def
-import sbt.Keys.streams
+import sbt.util.Logger
 
-trait PluginLogger {
-  protected def logDebug(msg: String): Unit = {
-    Def.task {
-      streams.value.log.debug(s"[sbt-asciidoctor] $msg")
-    }
-  }
+class PluginLogger(logger: Logger) {
+  def debug(msg: String): Unit = logger.debug(s"[sbt-asciidoctor] $msg")
 
-  protected def logInfo(msg: String): Unit = {
-    Def.task {
-      streams.value.log.info(s"[sbt-asciidoctor] $msg")
-    }
-  }
+  def info(msg: String): Unit = logger.info(s"[sbt-asciidoctor] $msg")
 
-  protected def logError(msg: String): Unit = {
-    Def.task {
-      streams.value.log.error(s"[sbt-asciidoctor] $msg")
-    }
-  }
+  def error(msg: String): Unit = logger.error(s"[sbt-asciidoctor] $msg")
 
-  protected def logWarn(msg: String): Unit = {
-    Def.task {
-      streams.value.log.warn(s"[sbt-asciidoctor] $msg")
-    }
-  }
+  def warn(msg: String): Unit = logger.warn(s"[sbt-asciidoctor] $msg")
 }

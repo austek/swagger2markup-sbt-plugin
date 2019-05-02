@@ -3,7 +3,7 @@ lazy val root = (project in file("."))
   .settings(
     Swagger2Markup / swaggerInput := "src/docs/swagger",
     Swagger2Markup / outputDirectory := target.value / "docs",
-    Swagger2Markup / attributes := Map("markupLanguage" -> "asciidoc"),
+    Swagger2Markup / properties := Map("markupLanguage" -> "ASCIIDOC"),
     name := "swagger-to-asciidoc",
     scalaVersion := "2.12.8",
     version := "0.1"

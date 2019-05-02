@@ -16,14 +16,14 @@ import sbt.{Def, _}
 import scala.annotation.tailrec
 import scala.collection.JavaConverters._
 
-object Swagger2MarkupPlugin extends AutoPlugin with PluginLogger {
+object Swagger2MarkupPlugin extends AutoPlugin {
 
   object autoImport extends Swagger2MarkupPluginKeys
   import autoImport._
 
   lazy val asciiDoctorSettings: Seq[Setting[_]] = Seq(
     processSwagger := processAsciiDocTask.value,
-    attributes := Map.empty,
+    properties := Map.empty,
     swaggerInput := "",
     outputDirectory := target.value / "generated-docs",
     outputFile := None
@@ -31,22 +31,37 @@ object Swagger2MarkupPlugin extends AutoPlugin with PluginLogger {
   override lazy val projectSettings: Seq[Setting[_]] = inConfig(Swagger2Markup)(asciiDoctorSettings)
 
   private def processAsciiDocTask: Def.Initialize[Task[Swagger2MarkupResult]] = Def.task[Swagger2MarkupResult] {
+    val logger = new PluginLogger(streams.value.log)
     val skp = (skip in publish).value
     val ref = thisProjectRef.value
     if (skp) {
-      logDebug(s"Skipping AsciiDoc processing for ${ref.project}")
+      logger.debug(s"Skipping AsciiDoc processing for ${ref.project}")
       Skipped
     }
     if (!sourceDirectory.value.exists) {
-      logInfo(s"sourceDirectory ${sourceDirectory.value.getPath} does not exist. Skip processing")
+      logger.info(s"sourceDirectory ${sourceDirectory.value.getPath} does not exist. Skip processing")
       Skipped
     }
 
+    logger.debug("convertSwagger2markup goal started")
+    logger.debug("swaggerInput: " + swaggerInput.value)
+    logger.debug("outputDir: " + outputDirectory.value)
+    logger.debug("outputFile: " + outputFile.value)
+    val swagger2markupProperties = properties.value.map{case (k, v) => s"swagger2markup.$k" -> v}
+    swagger2markupProperties.foreach { config =>
+      logger.debug(s"${config._1} : ${config._2}")
+    }
     try {
-      Thread.currentThread().setContextClassLoader(
-        this.getClass.getClassLoader
-      )
-      val swagger2MarkupConfig = new Swagger2MarkupConfigBuilder(attributes.value.asJava).build
+      Thread
+        .currentThread()
+        .setContextClassLoader(
+          this.getClass.getClassLoader
+        )
+
+      val swagger2MarkupConfig = new Swagger2MarkupConfigBuilder(swagger2markupProperties.asJava).build
+      logger.info(s"SSSSSSSSSSS: " + swagger2MarkupConfig.isSeparatedDefinitionsEnabled)
+      logger.info(s"OOOOOOOOOOO: " + swagger2MarkupConfig.isSeparatedOperationsEnabled)
+      logger.info(s"MMMMMMMMMMM: " + swagger2MarkupConfig.getMarkupLanguage)
       if (isLocalFolder(swaggerInput.value)) {
         getSwaggerFiles(new File(swaggerInput.value)).foreach { swaggerFile =>
           swaggerToMarkup(
@@ -54,7 +69,8 @@ object Swagger2MarkupPlugin extends AutoPlugin with PluginLogger {
             outputFile.value,
             outputDirectory.value,
             Swagger2MarkupConverter.from(swaggerFile.toURI).build,
-            inputIsLocalFolder = true
+            inputIsLocalFolder = true,
+            logger
           )
         }
       } else {
@@ -63,14 +79,15 @@ object Swagger2MarkupPlugin extends AutoPlugin with PluginLogger {
           outputFile.value,
           outputDirectory.value,
           Swagger2MarkupConverter.from(URIUtils.create(swaggerInput.value)).withConfig(swagger2MarkupConfig).build,
-          inputIsLocalFolder = true
+          inputIsLocalFolder = true,
+          logger
         )
       }
     } catch {
       case e: Exception =>
-        throw new Exception("Failed to execute goal 'processSwagger'" + e.getMessage, e)
+        throw new Exception("Failed to execute goal 'processSwagger'\n\t" + e.getMessage, e)
     }
-    logDebug("processSwagger goal finished")
+    logger.debug("processSwagger goal finished")
 
     Success
   }
@@ -81,7 +98,8 @@ object Swagger2MarkupPlugin extends AutoPlugin with PluginLogger {
                               outputFile: Option[File],
                               outputDirectory: File,
                               converter: Swagger2MarkupConverter,
-                              inputIsLocalFolder: Boolean): Unit = {
+                              inputIsLocalFolder: Boolean,
+                              logger: PluginLogger): Unit = {
     if (outputFile.isDefined) {
       var useFile = outputFile.get.toPath
       /*
@@ -98,12 +116,12 @@ object Swagger2MarkupPlugin extends AutoPlugin with PluginLogger {
         converter.getContext.setOutputPath(effectiveOutputDir.toPath)
         useFile = Paths.get(effectiveOutputDir.getPath, useFile.getFileName.toString)
       }
-      logInfo("Converting input to one file: " + useFile)
+      logger.info("Converting input to one file: " + useFile)
       converter.toFile(useFile)
     } else if (outputDirectory != null) {
       var effectiveOutputDir = outputDirectory
       if (inputIsLocalFolder) effectiveOutputDir = getEffectiveOutputDirWhenInputIsAFolder(inputFile, outputDirectory, converter)
-      logInfo("Converting input to multiple files in folder: '" + effectiveOutputDir + "'")
+      logger.info("Converting input to multiple files in folder: '" + effectiveOutputDir + "'")
       converter.toFolder(effectiveOutputDir.toPath)
     } else throw new IllegalArgumentException("Either outputFile or outputDir parameter must be used")
   }
@@ -175,7 +193,7 @@ trait Swagger2MarkupPluginKeys {
   val Swagger2Markup: Configuration = Configuration.of("Swagger2Markup", "swagger2markup") extend Runtime
   val processSwagger: TaskKey[Unit] = taskKey[Unit]("Convert OpenApi files to target files")
 
-  val attributes: SettingKey[Map[String, String]] = settingKey[Map[String, String]]("Swagger2Markup configuration attributes")
+  val properties: SettingKey[Map[String, String]] = settingKey[Map[String, String]]("Swagger2Markup configuration properties")
   val swaggerInput: SettingKey[String] = settingKey[String]("Swagger input URI")
   val outputDirectory: SettingKey[File] = settingKey[File]("Default directory target directory to contain converted files")
   val outputFile: SettingKey[Option[File]] = settingKey[Option[File]]("Used to override the name of the generated output file")
