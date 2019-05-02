@@ -1,0 +1,3 @@
+> swagger2markup:processSwagger
+
+-$ exists target/generated-docs

@@ -30,66 +30,65 @@ object Swagger2MarkupPlugin extends AutoPlugin {
   )
   override lazy val projectSettings: Seq[Setting[_]] = inConfig(Swagger2Markup)(asciiDoctorSettings)
 
-  private def processAsciiDocTask: Def.Initialize[Task[Swagger2MarkupResult]] = Def.task[Swagger2MarkupResult] {
+  private def processAsciiDocTask: Def.Initialize[Task[Seq[File]]] = Def.task {
     val logger = new PluginLogger(streams.value.log)
-    val skp = (skip in publish).value
+    val skp = (skip in Swagger2Markup).value
     val ref = thisProjectRef.value
     if (skp) {
       logger.debug(s"Skipping AsciiDoc processing for ${ref.project}")
-      Skipped
-    }
-    if (!sourceDirectory.value.exists) {
+      Seq.empty[File]
+    } else if (!sourceDirectory.value.exists) {
       logger.info(s"sourceDirectory ${sourceDirectory.value.getPath} does not exist. Skip processing")
-      Skipped
-    }
+      Seq.empty[File]
+    } else {
+      logger.debug("convertSwagger2markup goal started")
+      logger.debug("swaggerInput: " + swaggerInput.value)
+      logger.debug("outputDir: " + outputDirectory.value)
+      logger.debug("outputFile: " + outputFile.value)
+      val swagger2markupProperties = properties.value.map { case (k, v) => s"swagger2markup.$k" -> v }
+      swagger2markupProperties.foreach { config =>
+        logger.debug(s"${config._1} : ${config._2}")
+      }
+      try {
+        Thread
+          .currentThread()
+          .setContextClassLoader(
+            this.getClass.getClassLoader
+          )
 
-    logger.debug("convertSwagger2markup goal started")
-    logger.debug("swaggerInput: " + swaggerInput.value)
-    logger.debug("outputDir: " + outputDirectory.value)
-    logger.debug("outputFile: " + outputFile.value)
-    val swagger2markupProperties = properties.value.map{case (k, v) => s"swagger2markup.$k" -> v}
-    swagger2markupProperties.foreach { config =>
-      logger.debug(s"${config._1} : ${config._2}")
-    }
-    try {
-      Thread
-        .currentThread()
-        .setContextClassLoader(
-          this.getClass.getClassLoader
-        )
-
-      val swagger2MarkupConfig = new Swagger2MarkupConfigBuilder(swagger2markupProperties.asJava).build
-      logger.info(s"SSSSSSSSSSS: " + swagger2MarkupConfig.isSeparatedDefinitionsEnabled)
-      logger.info(s"OOOOOOOOOOO: " + swagger2MarkupConfig.isSeparatedOperationsEnabled)
-      logger.info(s"MMMMMMMMMMM: " + swagger2MarkupConfig.getMarkupLanguage)
-      if (isLocalFolder(swaggerInput.value)) {
-        getSwaggerFiles(new File(swaggerInput.value)).foreach { swaggerFile =>
+        val swagger2MarkupConfig = new Swagger2MarkupConfigBuilder(swagger2markupProperties.asJava).build
+        logger.info(s"SSSSSSSSSSS: " + swagger2MarkupConfig.isSeparatedDefinitionsEnabled)
+        logger.info(s"OOOOOOOOOOO: " + swagger2MarkupConfig.isSeparatedOperationsEnabled)
+        logger.info(s"MMMMMMMMMMM: " + swagger2MarkupConfig.getMarkupLanguage)
+        if (isLocalFolder(swaggerInput.value)) {
+          getSwaggerFiles(new File(swaggerInput.value)).foreach { swaggerFile =>
+            swaggerToMarkup(
+              swaggerInput.value,
+              outputFile.value,
+              outputDirectory.value,
+              Swagger2MarkupConverter.from(swaggerFile.toURI).build,
+              inputIsLocalFolder = true,
+              logger
+            )
+          }
+        } else {
           swaggerToMarkup(
             swaggerInput.value,
             outputFile.value,
             outputDirectory.value,
-            Swagger2MarkupConverter.from(swaggerFile.toURI).build,
+            Swagger2MarkupConverter.from(URIUtils.create(swaggerInput.value)).withConfig(swagger2MarkupConfig).build,
             inputIsLocalFolder = true,
             logger
           )
         }
-      } else {
-        swaggerToMarkup(
-          swaggerInput.value,
-          outputFile.value,
-          outputDirectory.value,
-          Swagger2MarkupConverter.from(URIUtils.create(swaggerInput.value)).withConfig(swagger2MarkupConfig).build,
-          inputIsLocalFolder = true,
-          logger
-        )
+      } catch {
+        case e: Exception =>
+          throw new Exception("Failed to execute goal 'processSwagger'\n\t" + e.getMessage, e)
       }
-    } catch {
-      case e: Exception =>
-        throw new Exception("Failed to execute goal 'processSwagger'\n\t" + e.getMessage, e)
-    }
-    logger.debug("processSwagger goal finished")
+      logger.debug("processSwagger goal finished")
 
-    Success
+      Seq.empty[File]
+    }
   }
 
   private def isLocalFolder(swaggerInput: String): Boolean = !swaggerInput.toLowerCase.startsWith("http") && new File(swaggerInput).isDirectory
