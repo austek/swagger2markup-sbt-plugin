@@ -1,7 +1,6 @@
 > swagger2markup:processSwagger
 
-$ exec ls -la target/docs/swagger
-# $ exists target/docs/swagger/definitions.md
-# $ exists target/docs/swagger/overview.md
-# $ exists target/docs/swagger/paths.adoc
-# $ exists target/docs/swagger/pet.md
+$ exists target/docs/definitions.md
+$ exists target/docs/overview.md
+$ exists target/docs/paths.md
+$ exists target/docs/security.md
