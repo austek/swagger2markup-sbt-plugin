@@ -43,6 +43,9 @@ object Swagger2MarkupPlugin extends AutoPlugin with PluginLogger {
     }
 
     try {
+      Thread.currentThread().setContextClassLoader(
+        this.getClass.getClassLoader
+      )
       val swagger2MarkupConfig = new Swagger2MarkupConfigBuilder(attributes.value.asJava).build
       if (isLocalFolder(swaggerInput.value)) {
         getSwaggerFiles(new File(swaggerInput.value)).foreach { swaggerFile =>

@@ -14,6 +14,8 @@ lazy val root = (project in file("."))
     libraryDependencies ++= Seq(
       "io.github.swagger2markup" % "swagger2markup" % "1.3.3"
     ),
+    scriptedLaunchOpts ++= Seq(s"-Dplugin.version=${version.value}"),
+    scriptedBufferLog := false,
     resolvers += Resolver.mavenLocal,
     resolvers += Resolver.sonatypeRepo("releases"),
     resolvers += Resolver.jcenterRepo,
