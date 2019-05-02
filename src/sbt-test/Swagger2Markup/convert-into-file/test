@@ -1,4 +1,3 @@
 > swagger2markup:processSwagger
 
-$ exec ls -la  target/generated-docs
 $ exists target/generated-docs/swagger.adoc
