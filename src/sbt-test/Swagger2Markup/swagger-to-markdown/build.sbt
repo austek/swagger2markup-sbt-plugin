@@ -3,6 +3,6 @@ lazy val root = (project in file("."))
   .settings(
     Swagger2Markup / swaggerInput := "src/main/swagger/swagger.json",
     Swagger2Markup / outputDirectory := target.value / "docs",
-    Swagger2Markup / properties := Map("markupLanguage" -> "MARKDOWN"),
+    Swagger2Markup / properties := Map("swagger2markup.markupLanguage" -> "MARKDOWN"),
     name := "swagger-to-markdown"
   )

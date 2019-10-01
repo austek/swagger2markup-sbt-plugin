@@ -43,7 +43,7 @@ object Swagger2MarkupPlugin extends AutoPlugin {
       logger.debug(s"swaggerInput: ${swaggerInput.value}")
       logger.debug(s"outputDir: ${outputDirectory.value}")
       logger.debug(s"outputFile: ${outputFile.value}")
-      val swagger2markupProperties = properties.value.map { case (k, v) => s"swagger2markup.$k" -> v }
+      val swagger2markupProperties = properties.value
       swagger2markupProperties.foreach { config =>
         logger.debug(s"${config._1} : ${config._2}")
       }
@@ -70,8 +70,7 @@ object Swagger2MarkupPlugin extends AutoPlugin {
                   logger
                 )
               }
-            }
-            else {
+            } else {
               logger.debug(s"Processing local file: ${swaggerInput.value}")
               swaggerToMarkup(
                 swaggerInput.value,
@@ -104,12 +103,14 @@ object Swagger2MarkupPlugin extends AutoPlugin {
     }
   }
 
-  private def swaggerToMarkup(inputFile: String,
-                              maybeOutputFile: Option[File],
-                              outputDirectory: File,
-                              converter: Swagger2MarkupConverter,
-                              inputIsLocalFolder: Boolean,
-                              logger: PluginLogger): Unit = {
+  private def swaggerToMarkup(
+    inputFile: String,
+    maybeOutputFile: Option[File],
+    outputDirectory: File,
+    converter: Swagger2MarkupConverter,
+    inputIsLocalFolder: Boolean,
+    logger: PluginLogger
+  ): Unit = {
     maybeOutputFile match {
       case Some(outFile) =>
         /*
@@ -138,7 +139,12 @@ object Swagger2MarkupPlugin extends AutoPlugin {
     }
   }
 
-  private def getEffectiveOutputDirWhenInputIsAFolder(inputFile: String, outputDirectory: File, converter: Swagger2MarkupConverter, logger: PluginLogger): File = {
+  private def getEffectiveOutputDirWhenInputIsAFolder(
+    inputFile: String,
+    outputDirectory: File,
+    converter: Swagger2MarkupConverter,
+    logger: PluginLogger
+  ): File = {
     var outputDirAddendum = getInputDirStructurePath(inputFile, converter)
     if (hasMultipleSwaggerFiles(converter, logger)) {
       /*
@@ -165,9 +171,8 @@ object Swagger2MarkupPlugin extends AutoPlugin {
     StringUtils.remove(swaggerFileFolder, getSwaggerInputAbsolutePath(inputFile)) // /bar-service/v1
   }
 
-  private def hasMultipleSwaggerFiles(converter: Swagger2MarkupConverter, logger: PluginLogger): Boolean = {
+  private def hasMultipleSwaggerFiles(converter: Swagger2MarkupConverter, logger: PluginLogger): Boolean =
     getSwaggerFiles(new File(converter.getContext.getSwaggerLocation).getParentFile, recursive = false).nonEmpty
-  }
 
   private def extractSwaggerFileNameWithoutExtension(converter: Swagger2MarkupConverter): String =
     FilenameUtils.removeExtension(new File(converter.getContext.getSwaggerLocation).getName)
@@ -176,7 +181,7 @@ object Swagger2MarkupPlugin extends AutoPlugin {
     @tailrec
     def go(toCheck: List[File], results: List[File]): Seq[File] = toCheck match {
       case head :: tail =>
-        val allFiles: List[File] = if(head.isFile) List(head) else head.listFiles.toList
+        val allFiles: List[File] = if (head.isFile) List(head) else head.listFiles.toList
         val swaggerFiles = allFiles.filter(_.isFile).filter(f => f.getName.endsWith("yaml") || f.getName.endsWith("yml") || f.getName.endsWith("json"))
         val childDirs = allFiles.filter(_.isDirectory)
         val updated = if (allFiles.length == childDirs.length) results else swaggerFiles ++ results
