@@ -1,4 +1,4 @@
-> swagger2markup:processSwagger
+> processSwagger
 
 $ exists target/docs/swagger/definitions.adoc
 $ exists target/docs/swagger/overview.adoc

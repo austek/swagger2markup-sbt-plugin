@@ -13,7 +13,7 @@ developers := List(
 )
 
 import xerial.sbt.Sonatype._
-sonatypeProjectHosting := Some(GitHubHosting("austek", "sbt-asciidoctor", "austek@mdsol.com"))
+sonatypeProjectHosting := Some(GitHubHosting("austek", "sbt-swagger2markup", "austek@mdsol.com"))
 
 publishTo := sonatypePublishToBundle.value
 releaseCommitMessage := s"Setting version to ${(version in ThisBuild).value} [ci skip]"
