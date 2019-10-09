@@ -1,0 +1,6 @@
+> processSwagger
+
+$ exists target/docs/definitions.md
+$ exists target/docs/overview.md
+$ exists target/docs/paths.md
+$ exists target/docs/security.md
