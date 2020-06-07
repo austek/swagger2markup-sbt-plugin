@@ -1,0 +1,7 @@
+> cleanCache
+> processOpenApi
+
+$ exists target/generated-docs/definitions.adoc
+$ exists target/generated-docs/overview.adoc
+$ exists target/generated-docs/paths.adoc
+$ exists target/generated-docs/security.adoc

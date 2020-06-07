@@ -1,0 +1,12 @@
+> cleanCache
+> processOpenApi
+
+$ exists target/docs/petstore/definitions.adoc
+$ exists target/docs/petstore/overview.adoc
+$ exists target/docs/petstore/paths.adoc
+$ exists target/docs/petstore/security.adoc
+
+$ exists target/docs/simple/definitions.adoc
+$ exists target/docs/simple/overview.adoc
+$ exists target/docs/simple/paths.adoc
+$ exists target/docs/simple/security.adoc
