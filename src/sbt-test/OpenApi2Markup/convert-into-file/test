@@ -1,0 +1,4 @@
+> cleanCache
+> processOpenApi
+
+$ exists target/generated-docs/petstore.adoc

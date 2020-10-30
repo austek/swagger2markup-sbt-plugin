@@ -4,15 +4,18 @@ lazy val root = (project in file("."))
     organization := "com.mdsol",
     name := "sbt-swagger2markup",
     description := "Swagger2Markup SBT Plugin",
-    scalaVersion := "2.12.10",
+    scalaVersion := "2.12.12",
     libraryDependencies ++= Seq(
-      "io.github.swagger2markup" % "swagger2markup" % "1.3.3"
+      "io.github.swagger2markup" % "openapi2markup" % "2.0.0-SNAPSHOT"
     ),
     scriptedLaunchOpts ++= Seq(s"-Dplugin.version=${version.value}"),
     scriptedBufferLog := false,
-    resolvers += Resolver.mavenLocal,
-    resolvers += Resolver.sonatypeRepo("releases"),
-    resolvers += Resolver.jcenterRepo,
+    resolvers ++= Seq(
+      Resolver.mavenLocal,
+      Resolver.sonatypeRepo("releases"),
+      "JFrog Artifactory" at "https://oss.jfrog.org/artifactory/oss-snapshot-local/",
+      Resolver.jcenterRepo
+    ),
     javacOptions ++= Seq("-encoding", "UTF-8"),
     scalacOptions := Seq(
       "-deprecation",
