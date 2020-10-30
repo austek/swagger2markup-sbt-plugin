@@ -1,0 +1,23 @@
+> cleanCache
+> processOpenApi
+
+
+$ exists target/generated-docs/open_api/petstore/definitions.adoc
+$ exists target/generated-docs/open_api/petstore/overview.adoc
+$ exists target/generated-docs/open_api/petstore/paths.adoc
+$ exists target/generated-docs/open_api/petstore/security.adoc
+
+$ exists target/generated-docs/open_api/simple/definitions.adoc
+$ exists target/generated-docs/open_api/simple/overview.adoc
+$ exists target/generated-docs/open_api/simple/paths.adoc
+$ exists target/generated-docs/open_api/simple/security.adoc
+
+$ exists target/generated-docs/other/petstore/definitions.adoc
+$ exists target/generated-docs/other/petstore/overview.adoc
+$ exists target/generated-docs/other/petstore/paths.adoc
+$ exists target/generated-docs/other/petstore/security.adoc
+
+$ exists target/generated-docs/other/simple/definitions.adoc
+$ exists target/generated-docs/other/simple/overview.adoc
+$ exists target/generated-docs/other/simple/paths.adoc
+$ exists target/generated-docs/other/simple/security.adoc

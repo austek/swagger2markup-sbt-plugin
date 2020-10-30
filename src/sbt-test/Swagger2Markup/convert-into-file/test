@@ -1,3 +1,0 @@
-> processSwagger
-
-$ exists target/generated-docs/swagger.adoc

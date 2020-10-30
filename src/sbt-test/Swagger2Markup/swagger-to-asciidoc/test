@@ -1,6 +1,0 @@
-> processSwagger
-
-$ exists target/docs/swagger/definitions.adoc
-$ exists target/docs/swagger/overview.adoc
-$ exists target/docs/swagger/paths.adoc
-$ exists target/docs/swagger/security.adoc
