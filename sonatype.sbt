@@ -3,8 +3,8 @@ publishMavenStyle := true
 licenses := Seq("MDSOL" -> url("https://github.com/mdsol/swagger2markup-sbt-plugin/blob/master/LICENSE"))
 scmInfo := Some(
   ScmInfo(
-    url("https://github.com/mdsol/swagger2markup-sbt-plugin"),
-    "scm:git@github.com:mdsol/swagger2markup-sbt-plugin.git"
+    url("https://github.com/austek/swagger2markup-sbt-plugin"),
+    "scm:git@github.com:austek/swagger2markup-sbt-plugin.git"
   )
 )
 
