@@ -35,8 +35,6 @@ object OpenApi2MarkupPlugin extends AutoPlugin {
       val ref = thisProjectRef.value
       if (skp)
         logger.debug(s"Skipping OpenApi2Markup processing for ${ref.project}")
-      else if (!sourceDirectory.value.exists)
-        logger.info(s"sourceDirectory ${sourceDirectory.value.getPath} does not exist. Skip processing")
       else {
         logger.debug("processOpenApi task started")
         logger.debug(s"openApi2MarkupInput: ${openApi2MarkupInput.value}")

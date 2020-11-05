@@ -1,4 +1,4 @@
-lazy val root = (project in file("."))
+lazy val `sbt-swagger2markup` = (project in file("."))
   .enablePlugins(SbtPlugin)
   .settings(
     organization := "com.mdsol",
@@ -8,8 +8,6 @@ lazy val root = (project in file("."))
     libraryDependencies ++= Seq(
       "io.github.swagger2markup" % "openapi2markup" % "2.0.0-SNAPSHOT"
     ),
-    scriptedLaunchOpts ++= Seq(s"-Dplugin.version=${version.value}"),
-    scriptedBufferLog := false,
     resolvers ++= Seq(
       Resolver.mavenLocal,
       Resolver.sonatypeRepo("releases"),
